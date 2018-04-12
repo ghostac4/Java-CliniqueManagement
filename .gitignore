@@ -1,0 +1,4 @@
+*.class
+*.json~
+*.txt~
+/bin/
