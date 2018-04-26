@@ -3,7 +3,7 @@ package com.bridgelabz.controllers;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import com.bridgelabz.model.Appointments;
+import com.bridgelabz.model.Appointment;
 import com.bridgelabz.model.Doctor;
 import com.bridgelabz.model.Patient;
 import com.bridgelabz.utility.Utility;
@@ -55,10 +55,10 @@ public class Details
    }
 
    public void addAppointment(Map<Integer, Doctor> doctorsList, Map<Integer, Patient> patientsList,
-         List<Appointments> appointments)
+         List<Appointment> appointments)
    {
       Display display = Display.getInstance();
-      Appointments appointment = new Appointments();
+      Appointment appointment = new Appointment();
       display.displayDoctors(doctorsList);
       System.out.print("\nEnter the id of Doctor : ");
       Doctor doctor = doctorsList.get(Integer.parseInt(utility.readLine()));

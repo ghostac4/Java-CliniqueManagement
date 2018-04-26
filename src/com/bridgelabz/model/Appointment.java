@@ -1,6 +1,6 @@
 package com.bridgelabz.model;
 
-public class Appointments
+public class Appointment
 {
    private int doctorId;
    private String doctorName;

@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import com.bridgelabz.model.Appointments;
+import org.codehaus.jackson.type.JavaType;
+import com.bridgelabz.model.Appointment;
 import com.bridgelabz.model.Doctor;
 import com.bridgelabz.model.Patient;
 import com.bridgelabz.utility.Utility;
@@ -19,7 +19,7 @@ public class CliniqueManager
    private Utility utility = Utility.getUtility();
    private Map<Integer, Patient> patientsList;
    private Map<Integer, Doctor> doctorsList;
-   private List<Appointments> appointments;
+   private List<Appointment> appointments;
    private int doctorId = 100;
    private int patientId = 1000;
    private String path = "/home/bridgeit/eclipse-workspace/Java CliniqueManagement/src/com/bridgelabz/utility/";
@@ -128,39 +128,22 @@ public class CliniqueManager
     */
    public void save()
    {
-      ObjectMapper objectMapper = new ObjectMapper();
-
-      String jsonString = "";
       List<Patient> patients = new ArrayList<>();
       List<Doctor> doctors = new ArrayList<>();
-      try {
-         Set<Entry<Integer, Patient>> patientSet = patientsList.entrySet();
-         for (Entry<Integer, Patient> entry : patientSet) {
-            patients.add(entry.getValue());
-         }
-         jsonString = objectMapper.writeValueAsString(patients);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      Utility.writeToFile(jsonString, path + "patients.json");
 
-      try {
-         Set<Entry<Integer, Doctor>> doctorSet = doctorsList.entrySet();
-         for (Entry<Integer, Doctor> entry : doctorSet) {
-            doctors.add(entry.getValue());
-         }
-         jsonString = objectMapper.writeValueAsString(doctors);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      Utility.writeToFile(jsonString, path + "doctors.json");
+      Set<Entry<Integer, Patient>> patientSet = patientsList.entrySet();
+      for (Entry<Integer, Patient> entry : patientSet)
+         patients.add(entry.getValue());
 
-      try {
-         jsonString = objectMapper.writeValueAsString(appointments);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      Utility.writeToFile(jsonString, path + "appointments.json");
+      Utility.writeToFile(writeList(patients), path + "patients.json");
+
+      Set<Entry<Integer, Doctor>> doctorSet = doctorsList.entrySet();
+      for (Entry<Integer, Doctor> entry : doctorSet)
+         doctors.add(entry.getValue());
+
+      Utility.writeToFile(writeList(doctors), path + "doctors.json");
+
+      Utility.writeToFile(writeList(appointments), path + "appointments.json");
    }
 
    /**
@@ -170,19 +153,10 @@ public class CliniqueManager
    {
       String jsonString = Utility.readFromFile(path + "patients.json");
 
-      ObjectMapper objectMapper = new ObjectMapper();
-      List<Patient> patients = null;
-      List<Doctor> doctors = null;
-      try {
-         patients = objectMapper.readValue(jsonString, new TypeReference<List<Patient>>() {
-         });
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
+      List<Patient> patients = new ArrayList<>();
+      List<Doctor> doctors = new ArrayList<>();
+      patients = readList(jsonString, Patient.class);
 
-      if (patients == null) {
-         patients = new ArrayList<>();
-      }
       if (!patients.isEmpty()) {
          for (Patient patient : patients) {
             patientId = patient.getId();
@@ -192,16 +166,8 @@ public class CliniqueManager
 
       jsonString = Utility.readFromFile(path + "doctors.json");
 
-      try {
-         doctors = objectMapper.readValue(jsonString, new TypeReference<List<Doctor>>() {
-         });
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
+      doctors = readList(jsonString, Doctor.class);
 
-      if (doctors == null) {
-         doctors = new ArrayList<>();
-      }
       if (!doctors.isEmpty()) {
          for (Doctor doctor : doctors) {
             doctorId = doctor.getId();
@@ -211,11 +177,31 @@ public class CliniqueManager
 
       jsonString = Utility.readFromFile(path + "appointments.json");
 
+      appointments = readList(jsonString, Appointment.class);
+   }
+
+   @SuppressWarnings("rawtypes")
+   public <T> List<T> readList(String jsonString, Class class1)
+   {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JavaType javaType = objectMapper.getTypeFactory().constructCollectionType(List.class, class1);
+      List<T> tempList = null;
       try {
-         appointments = objectMapper.readValue(jsonString, new TypeReference<List<Appointments>>() {
-         });
+         tempList = objectMapper.readValue(jsonString, javaType);
       } catch (IOException e) {
          e.printStackTrace();
+      }
+      return tempList;
+   }
+
+   public <T> String writeList(List<T> list)
+   {
+      ObjectMapper objectMapper = new ObjectMapper();
+      try {
+         return objectMapper.writeValueAsString(list);
+      } catch (IOException e) {
+         e.printStackTrace();
+         return null;
       }
    }
 }

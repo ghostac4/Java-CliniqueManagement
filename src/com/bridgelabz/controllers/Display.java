@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import com.bridgelabz.model.Appointments;
+import com.bridgelabz.model.Appointment;
 import com.bridgelabz.model.Doctor;
 import com.bridgelabz.model.Patient;
 
@@ -63,9 +63,9 @@ public class Display
       System.out.print("\n________________________________________________________");
    }
    
-   public void displayAppointments(List<Appointments> appointments) {
+   public void displayAppointments(List<Appointment> appointments) {
       System.out.print("\n_______________________Appointments_____________________");
-      for(Appointments appointment : appointments) {
+      for(Appointment appointment : appointments) {
          System.out.print("\n"+appointment.getDoctorId()+" "+appointment.getDoctorName()
          +"  "+appointment.getPatientId()+" "+appointment.getPatientName()+" "+appointment.getTime());
       }
